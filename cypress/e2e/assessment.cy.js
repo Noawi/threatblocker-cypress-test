@@ -29,10 +29,10 @@
 describe("WNBA Standings", () => {
     it("should display 2018 standings, assert table length and log team names", () => {
       
-        //go to the website
+        //1. Load the page: https://www.wnba.com/standings/
         cy.visit("https://www.wnba.com/standings/");
       
-        // Set the season to 2018 from seasons dropdown
+        //2. Set the season to 2018 from seasons dropdown
         /**
         * Note: without force:true, the test would throw the following error:
             * This element <select#Season-dropdown> is not visible because its parent <div._FiltersDropdown--wrapper_kzx0r_57._FiltersDropdown--wrapper__close_kzx0r_66> has CSS property: overflow: hidden and an effective width and height of: 0 x 0 pixels.
@@ -40,15 +40,18 @@ describe("WNBA Standings", () => {
         */
         cy.get("select[name='Season']").select("2018",{force:true});
   
-        // Assert the number of table records is 12
+        //3. Assert that the number of table records is 12
         cy.get("._TableWrapper_1gqq9_13 table tbody tr").should("have.length", 12);
   
-        // Iterate over the table and log team names
-        cy.get("._TableWrapper_1gqq9_13 table tbody tr").each((row) => {
-            cy.wrap(row).find("td:nth-child(1)").invoke("text").then((teamName) => {
-            cy.log(teamName);
-            });
-        });
+        //4. Iterate over the table and print the team names in column 1 using cypress log API
+        cy.get("._TableWrapper_1gqq9_13 table tbody tr").each((row) => { //get each row in the table 
+            cy.wrap(row) // wrap the row element so that the Cypress commands operate within the context of that specific row. 
+              .find('._TeamName__name_t3qn4_19')// find by class name 
+              .invoke("text") // invoke('text') yields the text of the HTML element as is without changing case
+              .then((teamName) => { //then print the team name for that row
+                cy.log(teamName);
+              });
+          });
 
     });
   });
